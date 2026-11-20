@@ -139,6 +139,8 @@ LazyPigOptions = {
 			{ text = "Gossip Auto Processing", var = "GOSSIP", tooltip = "Gossip Auto Processing (hold Shift to bypass)", tooltipSub = "Skip gossip choises from innkeepers, fly masters etc." },
 			{ text = "Auto Dismount", var = "DISMOUNT", tooltip = "Auto Dismount", tooltipSub = "Auto dismount when it's required by another action." },
 			{ text = "Auto Stance", var = "AUTOSTANCE", tooltip = "Auto Stance", tooltipSub = "Automatically change to required warrior stance/druid form on spell cast." },
+			{ text = "Auto Illusions (Remove)", var = "ILLUSION_REMOVE", tooltip = "Auto Illusions (Remove)", tooltipSub = "Auto removes Illusions when it's required by another action." },
+			{ text = "Auto Illusions (Recast)", var = "ILLUSION_RECAST", tooltip = "Auto Illusions (Recast)", tooltipSub = "Auto recasts the last Illusion used when able to." },
 		},
 	},
 }

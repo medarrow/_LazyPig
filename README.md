@@ -45,6 +45,8 @@ Updated for [Turtle WoW](https://turtle-wow.org/) with new features and bug fixe
 | Extended Camera Distance | Increase max camera distance up to 50y |
 | Duel Auto Decline | Hold Shift to bypass |
 | Auto Stance | Auto change warrior stance/druid form on spell cast |
+| Auto Illusions (Remove) | Auto removes `Illusion: ...` buffs when they are in the way (flight master, "shapeshifted" errors) |
+| Auto Illusions (Recast) | Auto recasts the last Illusion used once possible (landed, alive, out of combat, not mounted); right-click cancelling it yourself stops this |
 
 ### Special Key Combinations (enable separately in `/lp` > Miscellaneous)
 | Keys | Action |

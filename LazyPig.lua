@@ -42,6 +42,8 @@ LPCONFIG.REZ = false               -- Auto accept resurrection while in raid, du
 LPCONFIG.GOSSIP = true             -- Auto proccess gossip
 LPCONFIG.SALVA = nil               -- [number or nil] Autoremove Blessing of Salvation
 LPCONFIG.REMOVEMANABUFFS = false   -- Autoremove Blessing of Wisdom, Arcane Intellect, Prayer of Spirit
+LPCONFIG.ILLUSION_REMOVE = true    -- Auto remove Illusion buffs when they are in the way
+LPCONFIG.ILLUSION_RECAST = true    -- Auto recast the last Illusion when able to
 
 BINDING_HEADER_LP_HEADER = "_LazyPig";
 BINDING_NAME_LOGOUT = "Logout";
@@ -1350,6 +1352,15 @@ function LazyPig_Dismount()
 		end
 		buff = buff + 1
 	end
+end
+
+-- True if a buff description (tooltip line 2) belongs to a mount.
+function LazyPig_IsMountBuffText(desc)
+	if not desc then return false end
+	for _, str in pairs(dismountStrings) do
+		if string.find(desc, str) then return true end
+	end
+	return false
 end
 
 local stanceString = string.gsub(SPELL_FAILED_ONLY_SHAPESHIFT, "%%s", "(.+)")
