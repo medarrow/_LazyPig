@@ -9,9 +9,10 @@ Auto Illusions (Remove)  LPCONFIG.ILLUSION_REMOVE
 Auto Illusions (Recast)  LPCONFIG.ILLUSION_RECAST
   Remembers the last illusion on the player. When it is gone (removed by the
   option above, expired, lost on death...) it is put back as soon as possible:
-  not on a flight, alive, out of combat, not mounted, not in a form/stealth,
-  not casting. Cancelling the illusion yourself (right-click) forgets it.
-  An item in the bags with the same name is used, otherwise the spell is cast.
+  not on a flight, alive, not mounted, not in a form/stealth, not casting.
+  Combat is fine: illusions are instant and don't trigger the GCD.
+  Only illusions in the spellbook are recast (item illusions are ignored).
+  Cancelling the illusion yourself (right-click) forgets it.
 
 Casting needs a hardware event on the 1.12 client, so after one passive try
 the recast is retried on mouse-wheel zoom and target changes (same trick as
@@ -21,7 +22,7 @@ SmartBuff / BuffValet).
 local PREFIX = "Illusion: "
 local PREFIX_LEN = string.len(PREFIX)
 
-local RETRY_DELAY = 1.5       -- seconds between recast attempts (GCD)
+local RETRY_DELAY = 0.5       -- seconds between recast attempts (instant, no GCD)
 local MAX_ATTEMPTS = 8        -- give up after this many hardware attempts
 local AFTER_ERROR_DELAY = 15  -- after an error removal, let the player finish the action
 local LANDING_DELAY = 1       -- after landing, let the dismount finish
@@ -136,19 +137,18 @@ local function OnAurasChanged()
 		lastIllusion, active, pending = name, true, false
 	elseif active then
 		active = false
-		if lastIllusion and LPCONFIG.ILLUSION_RECAST then Schedule() end
+		if lastIllusion and LPCONFIG.ILLUSION_RECAST and FindSpell(lastIllusion) then Schedule() end
 	end
 end
 
-local function FindBagItem(name)
-	local needle = "[" .. name .. "]"
-	for bag = 0, 4 do
-		for slot = 1, GetContainerNumSlots(bag) do
-			local link = GetContainerItemLink(bag, slot)
-			if link and string.find(link, needle, 1, true) then
-				return bag, slot
-			end
-		end
+-- Spellbook index of the spell with this name, or nil.
+local function FindSpell(name)
+	local i = 1
+	while true do
+		local spell = GetSpellName(i, BOOKTYPE_SPELL)
+		if not spell then return end
+		if spell == name then return i end
+		i = i + 1
 	end
 end
 
@@ -156,7 +156,6 @@ local function CanRecast(now)
 	return LPCONFIG.ILLUSION_RECAST and pending and lastIllusion
 		and not casting and not taxiState and now >= notBefore and now >= nextTry
 		and not UnitOnTaxi("player") and not UnitIsDeadOrGhost("player")
-		and not UnitAffectingCombat("player")
 		and not IsMounted() and not InFormOrStealth()
 end
 
@@ -175,12 +174,12 @@ local function Recast(hardware)
 	end
 	nextTry = now + RETRY_DELAY
 
-	local bag, slot = FindBagItem(lastIllusion)
-	if bag then
-		UseContainerItem(bag, slot)
-	else
-		CastSpellByName(lastIllusion, 1)
+	local spell = FindSpell(lastIllusion)
+	if not spell then
+		pending = false
+		return
 	end
+	CastSpell(spell, BOOKTYPE_SPELL)
 	if SpellIsTargeting() then SpellTargetUnit("player") end
 end
 
